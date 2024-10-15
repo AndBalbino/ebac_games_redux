@@ -1,5 +1,6 @@
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import { screen, waitFor } from '@testing-library/react'
 
 import Produtos from '..'
 import { renderizaComProvider } from '../../../utils/tests'
@@ -42,6 +43,7 @@ const mocks = [
     titulo: 'Donkey Kong'
   }
 ]
+
 const server = setupServer(
   rest.get(
     'http://localhost:4000/produtos',
@@ -52,7 +54,19 @@ const server = setupServer(
 )
 
 describe('Teste para o container produtos', () => {
-  test('Deve renderizar corretamente', () => {
-    const { debug } = renderizaComProvider(<Produtos />)
+  beforeAll(() => server.listen())
+  afterEach(() => server.resetHandlers())
+  afterAll(() => server.close())
+
+  test('Deve renderizar corretamente com o texto de carregamento', () => {
+    renderizaComProvider(<Produtos />)
+    expect(screen.getByText('Carregando...')).toBeInTheDocument()
+  })
+
+  test('Deve renderizar corretamente com a listagem de jogos', async () => {
+    renderizaComProvider(<Produtos />)
+    await waitFor(() => {
+      expect(screen.getByText('Donkey kong')).toBeInTheDocument()
+    })
   })
 })

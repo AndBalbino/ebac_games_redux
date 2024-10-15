@@ -4,7 +4,7 @@ import Produtos from './containers/Produtos'
 
 import { GlobalStyle } from './styles'
 
-import { store } from './store'
+import { store } from './store/index'
 
 export type Game = {
   id: number
